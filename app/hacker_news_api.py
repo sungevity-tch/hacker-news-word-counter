@@ -29,20 +29,24 @@ def fetch_comments(n_comments=50, from_n_stories=100, starting_at_story=0):
     for id in story_ids:
         story = fetch_item(id).json()
         story_comments = story.get('kids')
-        print(story_comments)
         if story_comments:
             comment_itr = 0
             while comment_itr < len(story_comments) and comment_itr < n_comments:
-                print(comment_itr)
                 comment = fetch_item(story['kids'][comment_itr]).json()
                 comment_text = comment.get('text')
                 if comment_text:
-                    comments.append(comment_text)
+                    comments.append(comment)
                 else:
                     n_comments += 1
                 comment_itr += 1
 
     return comments
 
-def fetch_comments_recurse(from_n_stories=10, starting_at_story=0):
-    pass
+def fetch_text_recursive(id, text='', separator=' '):
+    item = fetch_item(id).json()
+    kids = item.get('kids')
+    item_text = item.get('text')
+    if item_text:
+        text += separator + item_text
+    if kids:
+        (fetch_text_recursive(kid, text, separator=separator) for kid in kids)
