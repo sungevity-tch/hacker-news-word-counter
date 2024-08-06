@@ -24,12 +24,16 @@ async def get_most_used_words():
     """Get most used words recursively in comments to first 10 stories"""
     params = build_params(10, 0)
     story_ids = fetch_best_stories(params).json()
+
     text = ''
+
     for id in story_ids:
         story = fetch_item(id).json()
         kids = story.get('kids')
         if not kids:
             continue
         for kid in kids:
-            fetch_text_recursive(kid, text)
+            for text_yield in fetch_text_recursive(kid):
+                text += text_yield
+
     return count_n_most_common_words(text, 10)

@@ -42,11 +42,12 @@ def fetch_comments(n_comments=50, from_n_stories=100, starting_at_story=0):
 
     return comments
 
-def fetch_text_recursive(id, text='', separator=' '):
+def fetch_text_recursive(id):
     item = fetch_item(id).json()
     kids = item.get('kids')
     item_text = item.get('text')
+
     if item_text:
-        text += separator + item_text
+        yield item_text
     if kids:
-        (fetch_text_recursive(kid, text, separator=separator) for kid in kids)
+        return (fetch_text_recursive(kid) for kid in kids)
